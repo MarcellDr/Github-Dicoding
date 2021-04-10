@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GitHub Dicoding</string>
+    <string name="todo">TODO</string>
+    <string name="search">Cari....</string>
+    <string name="following">Mengikuti</string>
+    <string name="followers">Diikuti</string>
+    <string name="github">GitHub</string>
+    <string name="users">Users</string>
+    <string name="open_github">Buka GitHub</string>
+</resources>

@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">GitHub Dicoding</string>
+    <string name="todo">TODO</string>
+    <string name="search">Search....</string>
+    <string name="following">Following</string>
+    <string name="followers">Followers</string>
+    <string name="github">GitHub</string>
+    <string name="users">Users</string>
+    <string name="open_github">Open GitHub</string>
+</resources>
