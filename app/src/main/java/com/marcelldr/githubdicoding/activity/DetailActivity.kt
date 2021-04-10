@@ -1,5 +1,7 @@
 package com.marcelldr.githubdicoding.activity
 
+import android.content.ContentValues
+import android.database.Cursor
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -9,6 +11,8 @@ import com.bumptech.glide.Glide
 import com.google.android.material.tabs.TabLayoutMediator
 import com.marcelldr.githubdicoding.R
 import com.marcelldr.githubdicoding.adapter.FollowTabAdapter
+import com.marcelldr.githubdicoding.database.DatabaseHandler
+import com.marcelldr.githubdicoding.database.DatabaseSchema
 import com.marcelldr.githubdicoding.databinding.ActivityDetailBinding
 import com.marcelldr.githubdicoding.model.UserDetailModel
 
@@ -16,6 +20,8 @@ class DetailActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailBinding
     private lateinit var userDetail: UserDetailModel
     private lateinit var tabTitle: ArrayList<String>
+    private lateinit var databaseHandler: DatabaseHandler
+    private var favorite: Boolean = false
 
     companion object {
         const val USER_DETAIL = "user_detail"
@@ -25,6 +31,8 @@ class DetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailBinding.inflate(layoutInflater)
         userDetail = intent.getParcelableExtra<UserDetailModel>(USER_DETAIL) as UserDetailModel
+        databaseHandler = DatabaseHandler.getInstance(applicationContext)
+        databaseHandler.open()
         setContentView(binding.root)
         noStatusBar()
         getUIReady(userDetail)
@@ -43,24 +51,31 @@ class DetailActivity : AppCompatActivity() {
         binding.detailUser.detailDescription.text = StringBuilder(userDetail.company ?: "").append(" - ").append(userDetail.location ?: "")
         Glide.with(binding.detailUser.detailAvatar.context).load(userDetail.avatar)
             .into(binding.detailUser.detailAvatar)
-        if(userDetail.favorite) {
-            Glide.with(binding.detailUser.favorite.context).load(R.drawable.heart)
-                .into(binding.detailUser.favorite)
-        }
 
-        binding.detailUser.arrowBack.setOnClickListener { finish() }
-        binding.detailUser.favorite.setOnClickListener {
-            if(userDetail.favorite) {
-                userDetail.favorite = !userDetail.favorite
-                Glide.with(binding.detailUser.favorite.context).load(R.drawable.heart_white)
-                    .into(binding.detailUser.favorite)
+        val result: Cursor = databaseHandler.where(DatabaseSchema.FavoriteTable.TABLE_NAME,
+                DatabaseSchema.FavoriteTable.KEY_USERNAME,
+                userDetail.username)
+        if(result.count > 0) {
+            favorite = !favorite
+        }
+        binding.detailUser.toggleFavorite.isChecked = favorite
+
+        binding.detailUser.backButton.setOnClickListener { finish() }
+        binding.detailUser.toggleFavorite.setOnClickListener {
+            if(favorite) {
+                favorite = !favorite
+                binding.detailUser.toggleFavorite.isChecked = favorite
+                databaseHandler.delete(DatabaseSchema.FavoriteTable.TABLE_NAME,
+                        DatabaseSchema.FavoriteTable.KEY_USERNAME,
+                        userDetail.username)
                 Toast.makeText(applicationContext, "${userDetail.username} dihapus dari Favorite", Toast.LENGTH_SHORT).show()
             } else {
-                userDetail.favorite = !userDetail.favorite
-                Glide.with(binding.detailUser.favorite.context).load(R.drawable.heart)
-                    .into(binding.detailUser.favorite)
+                favorite = !favorite
+                binding.detailUser.toggleFavorite.isChecked = favorite
+                val values = ContentValues()
+                values.put(DatabaseSchema.FavoriteTable.KEY_USERNAME, userDetail.username)
+                databaseHandler.insert(DatabaseSchema.FavoriteTable.TABLE_NAME, values)
                 Toast.makeText(applicationContext, "${userDetail.username} masuk ke Favorite", Toast.LENGTH_SHORT).show()
-
             }
         }
 
@@ -75,5 +90,18 @@ class DetailActivity : AppCompatActivity() {
             binding.followPager
         ) { tab, position -> tab.text = tabTitle[position] }.attach()
 
+    }
+
+    override fun onResume() {
+        databaseHandler.open()
+        super.onResume()
+    }
+    override fun onPause() {
+        super.onPause()
+        databaseHandler.close()
+    }
+    override fun onDestroy() {
+        super.onDestroy()
+        databaseHandler.close()
     }
 }

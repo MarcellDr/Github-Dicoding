@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.marcelldr.githubdicoding.R
+import com.marcelldr.githubdicoding.databinding.UserListItemBinding
 import com.marcelldr.githubdicoding.model.UserModel
 
 class UserRVAdapter(private val listUser: ArrayList<UserModel>) :
@@ -15,9 +16,12 @@ class UserRVAdapter(private val listUser: ArrayList<UserModel>) :
     private lateinit var onItemClickCallback: OnItemClickCallback
 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val userUsername: TextView = itemView.findViewById(R.id.userUsername)
-        val userAvatar: ImageView = itemView.findViewById(R.id.userAvatar)
-        val userLink: TextView = itemView.findViewById(R.id.userLink)
+        private val binding = UserListItemBinding.bind(itemView)
+        fun bind(user: UserModel) {
+            binding.userUsername.text = user.username
+            binding.userLink.text = user.link
+            Glide.with(binding.userAvatar.context).load(user.avatar).into(binding.userAvatar)
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ListViewHolder {
@@ -27,11 +31,7 @@ class UserRVAdapter(private val listUser: ArrayList<UserModel>) :
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        val user = listUser[position]
-        holder.userUsername.text = user.username
-        holder.userLink.text = user.link
-        Glide.with(holder.userAvatar.context).load(user.avatar).into(holder.userAvatar)
-
+        holder.bind(listUser[position])
         holder.itemView.setOnClickListener { onItemClickCallback.onItemClicked(listUser[holder.adapterPosition]) }
     }
 

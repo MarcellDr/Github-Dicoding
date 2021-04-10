@@ -42,18 +42,6 @@ class DatabaseHandler(context: Context) {
             "$_ID ASC")
     }
 
-    fun queryById(table: String, id: String): Cursor {
-        return database.query(
-            table,
-            null,
-            "$_ID = ?",
-            arrayOf(id),
-            null,
-            null,
-            null,
-            null)
-    }
-
     fun insert(table: String, values: ContentValues): Long {
         return database.insert(table, null, values)
     }
@@ -62,7 +50,19 @@ class DatabaseHandler(context: Context) {
         return database.update(table, values, "$_ID = ?", arrayOf(id))
     }
 
-    fun delete(table: String, id: String): Int {
-        return database.delete(table, "$_ID = ?", arrayOf(id))
+    fun delete(table: String, where: String, value: String?): Int {
+        return database.delete(table, "$where = ?", arrayOf(value))
+    }
+
+    fun where(table: String, where: String, value: String?): Cursor {
+        return database.query(
+                table,
+                null,
+                "$where = ?",
+                arrayOf(value),
+                null,
+                null,
+                null,
+                null)
     }
 }

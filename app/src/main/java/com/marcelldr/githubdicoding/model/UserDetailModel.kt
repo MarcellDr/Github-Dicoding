@@ -12,6 +12,5 @@ data class UserDetailModel(
     val location: String? = "",
     val repo: Int? = 0,
     val follower: Int? = 0,
-    val following: Int? = 0,
-    var favorite: Boolean = false
+    val following: Int? = 0
 ) : Parcelable

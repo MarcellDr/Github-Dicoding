@@ -72,7 +72,7 @@
                 android:background="#CB333333"
                 android:contentDescription="@string/todo"
                 android:padding="8dp"
-                app:srcCompat="@drawable/heart" />
+                app:srcCompat="@drawable/ic_favorite" />
 
             <ImageView
                 android:id="@+id/languageBtn"
