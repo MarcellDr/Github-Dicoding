@@ -5,20 +5,10 @@ import android.view.Window
 import androidx.appcompat.app.AppCompatActivity
 import com.marcelldr.githubdicoding.R
 
-class CustomLoading(activity: AppCompatActivity) {
-    private var dialog: Dialog = Dialog(activity)
-
+class CustomLoading(activity: AppCompatActivity): Dialog(activity) {
     init {
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(false)
-        dialog.setContentView(R.layout.custom_loading)
-    }
-
-    fun show() {
-        dialog.show()
-    }
-
-    fun dismiss() {
-        dialog.dismiss()
+        this.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        this.setCancelable(false)
+        this.setContentView(R.layout.custom_loading)
     }
 }

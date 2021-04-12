@@ -66,14 +66,14 @@ class FollowFragment : Fragment() {
             listFollow = getFollowsTask.await()
             withContext(Dispatchers.Main) {
                 if (listFollow.size == 0) {
-                    dismissShimer()
+                    dismissShimmer()
                     Toast.makeText(
                         requireContext(),
                         "There is No Followers / Following!",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    dismissShimer()
+                    dismissShimmer()
                     showRV()
                 }
             }
@@ -91,7 +91,7 @@ class FollowFragment : Fragment() {
         super.onPause()
     }
 
-    private fun dismissShimer() {
+    private fun dismissShimmer() {
         binding.followLoading.shimmerFrameLayout.stopShimmerAnimation()
         binding.followLoading.shimmerFrameLayout.visibility = View.GONE
         binding.followRV.visibility = View.VISIBLE

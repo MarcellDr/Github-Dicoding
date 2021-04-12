@@ -35,7 +35,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
-        android:id="@+id/navbar"
+        android:id="@+id/navFavorite"
         layout="@layout/favorite_nav_search"
         android:layout_width="0dp"
         android:layout_height="wrap_content"

@@ -9,15 +9,15 @@ open class KBaseColumns {
 class DatabaseSchema {
     class FavoriteTable: BaseColumns {
         companion object: KBaseColumns() {
-            val TABLE_NAME = "favorite"
-            val KEY_USERNAME = "username"
-            val KEY_NAME = "name"
-            val KEY_AVATAR = "avatar"
-            val KEY_COMPANY = "company"
-            val KEY_LOCATION = "location"
-            val KEY_REPO = "repo"
-            val KEY_FOLLOWER = "follower"
-            val KEY_FOLLOWING = "following"
+            const val TABLE_NAME = "favorite"
+            const val KEY_USERNAME = "username"
+            const val KEY_NAME = "name"
+            const val KEY_AVATAR = "avatar"
+            const val KEY_COMPANY = "company"
+            const val KEY_LOCATION = "location"
+            const val KEY_REPO = "repo"
+            const val KEY_FOLLOWER = "follower"
+            const val KEY_FOLLOWING = "following"
             val CREATE_TABLE = "CREATE TABLE $TABLE_NAME" +
                     "(${this._ID} INTEGER PRIMARY KEY AUTOINCREMENT," +
                     "$KEY_USERNAME TEXT NOT NULL," +
@@ -28,7 +28,17 @@ class DatabaseSchema {
                     "$KEY_REPO INTEGER NOT NULL," +
                     "$KEY_FOLLOWER INTEGER NOT NULL," +
                     "$KEY_FOLLOWING INTEGER NOT NULL)"
-            val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
+            const val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
+        }
+    }
+    class SettingTable: BaseColumns {
+        companion object: KBaseColumns() {
+            const val TABLE_NAME = "setting"
+            const val KEY_ALARM = "alarm"
+            val CREATE_TABLE = "CREATE TABLE $TABLE_NAME" +
+                    "(${this._ID} INTEGER PRIMARY KEY," +
+                    "$KEY_ALARM TEXT NOT NULL)"
+            const val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
         }
     }
 }

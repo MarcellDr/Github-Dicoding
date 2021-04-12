@@ -1,21 +1,22 @@
 package com.marcelldr.githubdicoding.activity
 
+import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.view.MenuInflater
 import android.view.View
 import android.widget.PopupMenu
+import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.marcelldr.githubdicoding.R
 import com.marcelldr.githubdicoding.adapter.UserRVAdapter
+import com.marcelldr.githubdicoding.custom.CustomAlarmDialog
 import com.marcelldr.githubdicoding.custom.CustomLoading
 import com.marcelldr.githubdicoding.databinding.ActivityMainBinding
 import com.marcelldr.githubdicoding.model.UserSearchModel
@@ -27,7 +28,7 @@ import kotlinx.coroutines.withContext
 
 private const val LIST_USER = "list_user"
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
     private var listUserSearch: ArrayList<UserSearchModel> = ArrayList()
     private lateinit var binding: ActivityMainBinding
     private lateinit var githubAPI: GithubAPI
@@ -103,12 +104,15 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.alarm -> {
+                    val customAlarmDialog = CustomAlarmDialog(this@MainActivity)
+                    customAlarmDialog.show()
                 }
             }
             true
         }
         popupMenu.show()
     }
+
     private fun showRV() {
         binding.userRV.layoutManager = LinearLayoutManager(this)
         userRVAdapter = UserRVAdapter(listUserSearch)
@@ -151,15 +155,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUIReady() {
-        binding.navbar.favoriteBtn.setOnClickListener {
+        binding.navMain.favoriteBtn.setOnClickListener {
             val intent = Intent(this@MainActivity, FavoriteActivity::class.java)
             startActivity(intent)
         }
-        binding.navbar.settingBtn.setOnClickListener {
-            Log.i("trigger", "a")
+        binding.navMain.settingBtn.setOnClickListener {
             showPopupMenu(it)
         }
-        binding.navbar.search.addTextChangedListener(object : TextWatcher {
+        binding.navMain.search.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
 
@@ -172,7 +175,7 @@ class MainActivity : AppCompatActivity() {
                         listUserSearch = userTask.await()
 
                         withContext(context = Dispatchers.Main) {
-                            if(listUserSearch.size > 0) {
+                            if (listUserSearch.size > 0) {
                                 dismissShimmer()
                                 showRV()
                             } else {
@@ -186,5 +189,8 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         })
+    }
+
+    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
     }
 }

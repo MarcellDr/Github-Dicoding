@@ -57,7 +57,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <include
-        android:id="@+id/navbar"
+        android:id="@+id/navMain"
         layout="@layout/main_nav_search"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

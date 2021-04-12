@@ -11,4 +11,6 @@
     <string name="no_data">No Data</string>
     <string name="language_setting">Language Setting</string>
     <string name="alarm_setting">Alarm Setting</string>
+    <string name="clear_alarm">Clear Alarm</string>
+    <string name="set_alarm">Set Alarm</string>
 </resources>

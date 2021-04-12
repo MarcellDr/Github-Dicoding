@@ -9,7 +9,6 @@ import com.marcelldr.githubdicoding.R
 import com.marcelldr.githubdicoding.database.DatabaseHandler
 import com.marcelldr.githubdicoding.databinding.FavoriteListItemBinding
 import com.marcelldr.githubdicoding.model.UserDetailModel
-import com.marcelldr.githubdicoding.model.UserSearchModel
 import java.lang.StringBuilder
 
 class FavoriteRVAdapter(private val listUserFavorite: ArrayList<UserDetailModel>) : RecyclerView.Adapter<FavoriteRVAdapter.ListViewHolder>() {
@@ -43,16 +42,16 @@ class FavoriteRVAdapter(private val listUserFavorite: ArrayList<UserDetailModel>
         return listUserFavorite.size
     }
 
-    fun unFavorite(position: Int) {
-        notifyItemRemoved(position)
-        notifyItemRangeChanged(position, listUserFavorite.size)
-    }
-
     interface OnItemClickCallback {
         fun onItemClicked(data: UserDetailModel)
     }
 
     fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
         this.onItemClickCallback = onItemClickCallback
+    }
+
+    private fun unFavorite(position: Int) {
+        notifyItemRemoved(position)
+        notifyItemRangeChanged(position, listUserFavorite.size)
     }
 }

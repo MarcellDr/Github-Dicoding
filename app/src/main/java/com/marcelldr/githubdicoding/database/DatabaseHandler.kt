@@ -46,8 +46,8 @@ class DatabaseHandler(context: Context) {
         return database.insert(table, null, values)
     }
 
-    fun update(table: String, id: String, values: ContentValues): Int {
-        return database.update(table, values, "$_ID = ?", arrayOf(id))
+    fun update(table: String, where: String, oldValue: String, newValue: ContentValues): Int {
+        return database.update(table, newValue, "$where = ?", arrayOf(oldValue))
     }
 
     fun delete(table: String, where: String, value: String?): Int {
