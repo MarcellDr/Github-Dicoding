@@ -11,12 +11,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.marcelldr.githubdicoding.R
 import com.marcelldr.githubdicoding.activity.DetailActivity
 import com.marcelldr.githubdicoding.adapter.UserRVAdapter
 import com.marcelldr.githubdicoding.custom.CustomLoading
 import com.marcelldr.githubdicoding.databinding.FragmentFollowBinding
-import com.marcelldr.githubdicoding.model.UserModel
+import com.marcelldr.githubdicoding.model.UserSearchModel
 import com.marcelldr.githubdicoding.service.GithubAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -29,7 +28,7 @@ private const val URL = "url"
 class FollowFragment : Fragment() {
     private var username: String? = null
     private var url: String? = null
-    private var listFollow: ArrayList<UserModel> = ArrayList()
+    private var listFollow: ArrayList<UserSearchModel> = ArrayList()
     private lateinit var githubAPI: GithubAPI
     private lateinit var followRVAdapter: UserRVAdapter
     private lateinit var binding: FragmentFollowBinding
@@ -103,7 +102,7 @@ class FollowFragment : Fragment() {
         followRVAdapter = UserRVAdapter(listFollow)
         binding.followRV.adapter = followRVAdapter
         followRVAdapter.setOnItemClickCallback(object : UserRVAdapter.OnItemClickCallback {
-            override fun onItemClicked(data: UserModel) {
+            override fun onItemClicked(data: UserSearchModel) {
                 val customLoading = CustomLoading(activity as AppCompatActivity)
                 customLoading.show()
 

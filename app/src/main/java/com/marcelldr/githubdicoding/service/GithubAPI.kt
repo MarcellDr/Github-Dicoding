@@ -6,7 +6,7 @@ import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
 import com.marcelldr.githubdicoding.BuildConfig
 import com.marcelldr.githubdicoding.model.UserDetailModel
-import com.marcelldr.githubdicoding.model.UserModel
+import com.marcelldr.githubdicoding.model.UserSearchModel
 import org.json.JSONArray
 import org.json.JSONObject
 
@@ -19,8 +19,8 @@ class GithubAPI(context: Context) {
         const val AUTH_KEY: String = BuildConfig.GITHUB_TOKEN
     }
 
-    fun getUsers(query: String? = "MarcellDr"): ArrayList<UserModel> {
-        val listUser = ArrayList<UserModel>()
+    fun getUsers(query: String? = "MarcellDr"): ArrayList<UserSearchModel> {
+        val listUser = ArrayList<UserSearchModel>()
         AndroidNetworking.initialize(ctx)
         val request = AndroidNetworking.get(BASE_URL_USERS)
             .addPathParameter("username", query)
@@ -34,7 +34,7 @@ class GithubAPI(context: Context) {
             for (i in 0 until users.length()) {
                 val user = users.getJSONObject(i)
                 listUser.add(
-                    UserModel(
+                    UserSearchModel(
                         user.getString("login"),
                         user.getString("avatar_url"),
                         user.getString("html_url")
@@ -43,7 +43,7 @@ class GithubAPI(context: Context) {
             }
             Log.i("UserSuccess", "UserSuccess")
         } else {
-            Log.i("UserError", "UserError")
+            Log.i("UserError", response.error.message ?: "UserError")
         }
         Log.i("UserDone", "UserDone")
         return listUser
@@ -72,14 +72,14 @@ class GithubAPI(context: Context) {
             )
             Log.i("DetailSuccess", "DetailSuccess")
         } else {
-            Log.i("DetailError", "DetailError")
+            Log.i("DetailError", response.error.message ?: "DetailError")
         }
         Log.i("DetailDone", "DetailDone")
         return userDetail
     }
 
-    fun getFollows(url: String?, query: String?): ArrayList<UserModel> {
-        val listFollows = ArrayList<UserModel>()
+    fun getFollows(url: String?, query: String?): ArrayList<UserSearchModel> {
+        val listFollows = ArrayList<UserSearchModel>()
         AndroidNetworking.initialize(ctx)
         val request = AndroidNetworking.get(url)
             .addPathParameter("username", query)
@@ -92,7 +92,7 @@ class GithubAPI(context: Context) {
             for (i in 0 until follows.length()) {
                 val user = follows.getJSONObject(i)
                 listFollows.add(
-                    UserModel(
+                    UserSearchModel(
                         user.getString("login"),
                         user.getString("avatar_url"),
                         user.getString("html_url")
@@ -100,7 +100,7 @@ class GithubAPI(context: Context) {
                 )
             }
         } else {
-            Log.i("FollowError", "FollowError")
+            Log.i("FollowError", response.error.message ?: "FollowError")
         }
         return listFollows
     }

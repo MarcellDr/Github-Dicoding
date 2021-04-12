@@ -32,7 +32,6 @@ class DetailActivity : AppCompatActivity() {
         binding = ActivityDetailBinding.inflate(layoutInflater)
         userDetail = intent.getParcelableExtra<UserDetailModel>(USER_DETAIL) as UserDetailModel
         databaseHandler = DatabaseHandler.getInstance(applicationContext)
-        databaseHandler.open()
         setContentView(binding.root)
         noStatusBar()
         getUIReady(userDetail)
@@ -52,16 +51,19 @@ class DetailActivity : AppCompatActivity() {
         Glide.with(binding.detailUser.detailAvatar.context).load(userDetail.avatar)
             .into(binding.detailUser.detailAvatar)
 
+        databaseHandler.open()
         val result: Cursor = databaseHandler.where(DatabaseSchema.FavoriteTable.TABLE_NAME,
                 DatabaseSchema.FavoriteTable.KEY_USERNAME,
                 userDetail.username)
         if(result.count > 0) {
             favorite = !favorite
         }
+        databaseHandler.close()
         binding.detailUser.toggleFavorite.isChecked = favorite
 
         binding.detailUser.backButton.setOnClickListener { finish() }
         binding.detailUser.toggleFavorite.setOnClickListener {
+            databaseHandler.open()
             if(favorite) {
                 favorite = !favorite
                 binding.detailUser.toggleFavorite.isChecked = favorite
@@ -74,9 +76,17 @@ class DetailActivity : AppCompatActivity() {
                 binding.detailUser.toggleFavorite.isChecked = favorite
                 val values = ContentValues()
                 values.put(DatabaseSchema.FavoriteTable.KEY_USERNAME, userDetail.username)
+                values.put(DatabaseSchema.FavoriteTable.KEY_NAME, userDetail.name)
+                values.put(DatabaseSchema.FavoriteTable.KEY_AVATAR, userDetail.avatar)
+                values.put(DatabaseSchema.FavoriteTable.KEY_COMPANY, userDetail.company)
+                values.put(DatabaseSchema.FavoriteTable.KEY_LOCATION, userDetail.location)
+                values.put(DatabaseSchema.FavoriteTable.KEY_REPO, userDetail.repo)
+                values.put(DatabaseSchema.FavoriteTable.KEY_FOLLOWER, userDetail.follower)
+                values.put(DatabaseSchema.FavoriteTable.KEY_FOLLOWING, userDetail.following)
                 databaseHandler.insert(DatabaseSchema.FavoriteTable.TABLE_NAME, values)
                 Toast.makeText(applicationContext, "${userDetail.username} masuk ke Favorite", Toast.LENGTH_SHORT).show()
             }
+            databaseHandler.close()
         }
 
         tabTitle = ArrayList()

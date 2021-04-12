@@ -3,24 +3,22 @@ package com.marcelldr.githubdicoding.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.marcelldr.githubdicoding.R
 import com.marcelldr.githubdicoding.databinding.UserListItemBinding
-import com.marcelldr.githubdicoding.model.UserModel
+import com.marcelldr.githubdicoding.model.UserSearchModel
 
-class UserRVAdapter(private val listUser: ArrayList<UserModel>) :
+class UserRVAdapter(private val listUserSearch: ArrayList<UserSearchModel>) :
     RecyclerView.Adapter<UserRVAdapter.ListViewHolder>() {
     private lateinit var onItemClickCallback: OnItemClickCallback
 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val binding = UserListItemBinding.bind(itemView)
-        fun bind(user: UserModel) {
-            binding.userUsername.text = user.username
-            binding.userLink.text = user.link
-            Glide.with(binding.userAvatar.context).load(user.avatar).into(binding.userAvatar)
+        fun bind(userSearch: UserSearchModel) {
+            binding.userUsername.text = userSearch.username
+            binding.userLink.text = userSearch.link
+            Glide.with(binding.userAvatar.context).load(userSearch.avatar).into(binding.userAvatar)
         }
     }
 
@@ -31,16 +29,16 @@ class UserRVAdapter(private val listUser: ArrayList<UserModel>) :
     }
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
-        holder.bind(listUser[position])
-        holder.itemView.setOnClickListener { onItemClickCallback.onItemClicked(listUser[holder.adapterPosition]) }
+        holder.bind(listUserSearch[position])
+        holder.itemView.setOnClickListener { onItemClickCallback.onItemClicked(listUserSearch[holder.adapterPosition]) }
     }
 
     override fun getItemCount(): Int {
-        return listUser.size
+        return listUserSearch.size
     }
 
     interface OnItemClickCallback {
-        fun onItemClicked(data: UserModel)
+        fun onItemClicked(data: UserSearchModel)
     }
 
     fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {

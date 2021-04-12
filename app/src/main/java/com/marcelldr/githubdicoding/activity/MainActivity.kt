@@ -6,15 +6,19 @@ import android.os.Bundle
 import android.provider.Settings
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
+import android.view.MenuInflater
 import android.view.View
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.marcelldr.githubdicoding.R
 import com.marcelldr.githubdicoding.adapter.UserRVAdapter
 import com.marcelldr.githubdicoding.custom.CustomLoading
 import com.marcelldr.githubdicoding.databinding.ActivityMainBinding
-import com.marcelldr.githubdicoding.model.UserModel
+import com.marcelldr.githubdicoding.model.UserSearchModel
 import com.marcelldr.githubdicoding.service.GithubAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -24,10 +28,11 @@ import kotlinx.coroutines.withContext
 private const val LIST_USER = "list_user"
 
 class MainActivity : AppCompatActivity() {
-    private var listUser: ArrayList<UserModel> = ArrayList()
+    private var listUserSearch: ArrayList<UserSearchModel> = ArrayList()
+    private lateinit var binding: ActivityMainBinding
     private lateinit var githubAPI: GithubAPI
     private lateinit var userRVAdapter: UserRVAdapter
-    private lateinit var binding: ActivityMainBinding
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,21 +43,21 @@ class MainActivity : AppCompatActivity() {
         getUIReady()
 
         lifecycleScope.launch(Dispatchers.Default) {
-            listUser = if (savedInstanceState != null) {
-                savedInstanceState.getParcelableArrayList<UserModel>(LIST_USER) as ArrayList<UserModel>
+            listUserSearch = if (savedInstanceState != null) {
+                savedInstanceState.getParcelableArrayList<UserSearchModel>(LIST_USER) as ArrayList<UserSearchModel>
             } else {
                 val userTask = async(context = Dispatchers.IO) { githubAPI.getUsers() }
                 userTask.await()
             }
             withContext(Dispatchers.Main) {
-                dismissShimer()
+                dismissShimmer()
                 showRV()
             }
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        outState.putParcelableArrayList(LIST_USER, listUser)
+        outState.putParcelableArrayList(LIST_USER, listUserSearch)
         super.onSaveInstanceState(outState)
     }
 
@@ -66,24 +71,50 @@ class MainActivity : AppCompatActivity() {
         super.onPause()
     }
 
+    private fun alert(message: String) {
+        binding.userLoading.shimmerFrameLayout.stopShimmerAnimation()
+        binding.userLoading.shimmerFrameLayout.visibility = View.GONE
+        binding.userRV.visibility = View.GONE
+        binding.alert.container.visibility = View.VISIBLE
+        binding.alert.message.text = message
+    }
+
     private fun showShimmer() {
         binding.userLoading.shimmerFrameLayout.startShimmerAnimation()
         binding.userLoading.shimmerFrameLayout.visibility = View.VISIBLE
         binding.userRV.visibility = View.GONE
+        binding.alert.container.visibility = View.GONE
     }
 
-    private fun dismissShimer() {
+    private fun dismissShimmer() {
         binding.userLoading.shimmerFrameLayout.stopShimmerAnimation()
         binding.userLoading.shimmerFrameLayout.visibility = View.GONE
         binding.userRV.visibility = View.VISIBLE
+        binding.alert.container.visibility = View.GONE
     }
 
+    private fun showPopupMenu(v: View) {
+        val popupMenu = PopupMenu(this, v)
+        popupMenu.menuInflater.inflate(R.menu.menu_setting, popupMenu.menu)
+        popupMenu.setOnMenuItemClickListener { item ->
+            when (item.itemId) {
+                R.id.language -> {
+                    val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+                    startActivity(intent)
+                }
+                R.id.alarm -> {
+                }
+            }
+            true
+        }
+        popupMenu.show()
+    }
     private fun showRV() {
         binding.userRV.layoutManager = LinearLayoutManager(this)
-        userRVAdapter = UserRVAdapter(listUser)
+        userRVAdapter = UserRVAdapter(listUserSearch)
         binding.userRV.adapter = userRVAdapter
         userRVAdapter.setOnItemClickCallback(object : UserRVAdapter.OnItemClickCallback {
-            override fun onItemClicked(data: UserModel) {
+            override fun onItemClicked(data: UserSearchModel) {
                 val customLoading = CustomLoading(this@MainActivity)
                 customLoading.show()
 
@@ -120,11 +151,15 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun getUIReady() {
-        binding.navbar.languageBtn.setOnClickListener {
-            val intent = Intent(Settings.ACTION_LOCALE_SETTINGS)
+        binding.navbar.favoriteBtn.setOnClickListener {
+            val intent = Intent(this@MainActivity, FavoriteActivity::class.java)
             startActivity(intent)
         }
-        binding.navbar.navSearch.addTextChangedListener(object : TextWatcher {
+        binding.navbar.settingBtn.setOnClickListener {
+            Log.i("trigger", "a")
+            showPopupMenu(it)
+        }
+        binding.navbar.search.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
 
@@ -134,15 +169,20 @@ class MainActivity : AppCompatActivity() {
                     lifecycleScope.launch(Dispatchers.Default) {
                         val userTask =
                             async(context = Dispatchers.IO) { githubAPI.getUsers(s.toString()) }
-                        listUser = userTask.await()
+                        listUserSearch = userTask.await()
 
                         withContext(context = Dispatchers.Main) {
-                            dismissShimer()
-                            showRV()
+                            if(listUserSearch.size > 0) {
+                                dismissShimmer()
+                                showRV()
+                            } else {
+                                alert("No Data")
+                            }
+
                         }
                     }
                 } else {
-                    dismissShimer()
+                    alert("No Entry")
                 }
             }
         })

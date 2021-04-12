@@ -31,7 +31,7 @@ class DatabaseHandler(context: Context) {
         }
     }
 
-    fun queryAll(table: String): Cursor {
+    fun getAll(table: String): Cursor {
         return database.query(
             table,
             null,

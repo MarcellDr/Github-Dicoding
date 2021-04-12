@@ -7,4 +7,8 @@
     <string name="github">GitHub</string>
     <string name="users">Users</string>
     <string name="open_github">Open GitHub</string>
+    <string name="favorite">Favorite</string>
+    <string name="no_data">No Data</string>
+    <string name="language_setting">Language Setting</string>
+    <string name="alarm_setting">Alarm Setting</string>
 </resources>
