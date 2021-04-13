@@ -40,6 +40,7 @@ class CustomAlarmDialog(private var activity: AppCompatActivity) : Dialog(activi
                 binding.time.text = alarm
             }
         }
+        settingCursor.close()
         databaseHandler.close()
 
         binding.timeAlarm.setOnClickListener {
@@ -79,6 +80,7 @@ class CustomAlarmDialog(private var activity: AppCompatActivity) : Dialog(activi
                         )
                     }
                 }
+                cursor.close()
                 databaseHandler.close()
                 alarmReceiver.setRepeatingAlarm(
                     context,

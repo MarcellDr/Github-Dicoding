@@ -1,5 +1,6 @@
 package com.marcelldr.githubdicoding.database
 
+import android.net.Uri
 import android.provider.BaseColumns
 
 open class KBaseColumns {
@@ -7,8 +8,13 @@ open class KBaseColumns {
 }
 
 class DatabaseSchema {
-    class FavoriteTable: BaseColumns {
-        companion object: KBaseColumns() {
+    companion object {
+        const val AUTHORITY = "com.marcelldr.githubdicoding"
+        const val SCHEME = "content"
+    }
+
+    class FavoriteTable : BaseColumns {
+        companion object : KBaseColumns() {
             const val TABLE_NAME = "favorite"
             const val KEY_USERNAME = "username"
             const val KEY_NAME = "name"
@@ -29,10 +35,15 @@ class DatabaseSchema {
                     "$KEY_FOLLOWER INTEGER NOT NULL," +
                     "$KEY_FOLLOWING INTEGER NOT NULL)"
             const val DROP_TABLE = "DROP TABLE IF EXISTS $TABLE_NAME"
+            val CONTENT_URI: Uri = Uri.Builder().scheme(SCHEME)
+                .authority(AUTHORITY)
+                .appendPath(TABLE_NAME)
+                .build()
         }
     }
-    class SettingTable: BaseColumns {
-        companion object: KBaseColumns() {
+
+    class SettingTable : BaseColumns {
+        companion object : KBaseColumns() {
             const val TABLE_NAME = "setting"
             const val KEY_ALARM = "alarm"
             val CREATE_TABLE = "CREATE TABLE $TABLE_NAME" +

@@ -2,11 +2,11 @@ package com.marcelldr.githubdicoding.activity
 
 import android.content.Intent
 import android.graphics.Color
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.view.View
+import androidx.appcompat.app.AppCompatActivity
 import com.marcelldr.githubdicoding.R
 
 class SplashActivity : AppCompatActivity() {

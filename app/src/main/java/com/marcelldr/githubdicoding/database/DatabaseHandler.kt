@@ -26,7 +26,7 @@ class DatabaseHandler(context: Context) {
     fun close() {
         databaseHelper.close()
 
-        if(database.isOpen) {
+        if (database.isOpen) {
             database.close()
         }
     }
@@ -39,7 +39,20 @@ class DatabaseHandler(context: Context) {
             null,
             null,
             null,
-            "$_ID ASC")
+            "$_ID ASC"
+        )
+    }
+
+    fun getById(table: String, id: String): Cursor {
+        return database.query(
+            table,
+            null,
+            "$_ID = ?",
+            arrayOf(id),
+            null,
+            null,
+            null
+        )
     }
 
     fun insert(table: String, values: ContentValues): Long {
@@ -56,13 +69,14 @@ class DatabaseHandler(context: Context) {
 
     fun where(table: String, where: String, value: String?): Cursor {
         return database.query(
-                table,
-                null,
-                "$where = ?",
-                arrayOf(value),
-                null,
-                null,
-                null,
-                null)
+            table,
+            null,
+            "$where = ?",
+            arrayOf(value),
+            null,
+            null,
+            null,
+            null
+        )
     }
 }

@@ -1,8 +1,12 @@
 package com.marcelldr.githubdicoding.activity
 
+import android.database.ContentObserver
 import android.database.Cursor
 import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.HandlerThread
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -10,7 +14,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.marcelldr.githubdicoding.adapter.FavoriteRVAdapter
-import com.marcelldr.githubdicoding.database.DatabaseHandler
 import com.marcelldr.githubdicoding.database.DatabaseSchema
 import com.marcelldr.githubdicoding.databinding.ActivityFavoriteBinding
 import com.marcelldr.githubdicoding.model.UserDetailModel
@@ -18,18 +21,18 @@ import com.marcelldr.githubdicoding.model.UserDetailModel
 class FavoriteActivity : AppCompatActivity() {
     private var listUserFavorite: ArrayList<UserDetailModel> = ArrayList()
     private var filter: ArrayList<UserDetailModel> = ArrayList()
+    private var favoriteTable = DatabaseSchema.FavoriteTable
     private lateinit var binding: ActivityFavoriteBinding
     private lateinit var favoriteRVAdapter: FavoriteRVAdapter
-    private lateinit var databaseHandler: DatabaseHandler
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFavoriteBinding.inflate(layoutInflater)
-        databaseHandler = DatabaseHandler.getInstance(applicationContext)
         setContentView(binding.root)
 
         noStatusBar()
-        getUIReady()
+        watchContentProvider()
         getFavorite()
+        getUIReady()
         showRV()
 
     }
@@ -40,7 +43,31 @@ class FavoriteActivity : AppCompatActivity() {
         window?.statusBarColor = Color.TRANSPARENT
     }
 
+    private fun watchContentProvider() {
+        val handlerThread = HandlerThread("DataObserver")
+        handlerThread.start()
+        val handler = Handler(handlerThread.looper)
+
+        val myObserver = object : ContentObserver(handler) {
+            override fun onChange(self: Boolean) {
+                getFavorite()
+                runOnUiThread {
+                    if (listUserFavorite.size == 0) {
+                        binding.alert.container.visibility = View.VISIBLE
+                    }
+                    showRV()
+                }
+            }
+        }
+
+        contentResolver.registerContentObserver(favoriteTable.CONTENT_URI, true, myObserver)
+    }
+
     private fun getUIReady() {
+        filter = listUserFavorite
+        if (filter.size == 0) {
+            binding.alert.container.visibility = View.VISIBLE
+        }
         binding.navFavorite.backButton.setOnClickListener { finish() }
         binding.navFavorite.search.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -66,9 +93,10 @@ class FavoriteActivity : AppCompatActivity() {
     }
 
     private fun getFavorite() {
-        databaseHandler.open()
-        val favoriteCursor: Cursor = databaseHandler.getAll(DatabaseSchema.FavoriteTable.TABLE_NAME)
-        favoriteCursor.apply {
+        listUserFavorite = ArrayList()
+        val favoriteCursor: Cursor? =
+            contentResolver.query(favoriteTable.CONTENT_URI, null, null, null, null)
+        favoriteCursor!!.apply {
             while (moveToNext()) {
                 val userFavorite = UserDetailModel(
                     getString(getColumnIndexOrThrow(DatabaseSchema.FavoriteTable.KEY_USERNAME)),
@@ -83,12 +111,7 @@ class FavoriteActivity : AppCompatActivity() {
                 listUserFavorite.add(userFavorite)
             }
         }
-        databaseHandler.close()
-        if (listUserFavorite.size == 0) {
-            binding.alert.container.visibility = View.VISIBLE
-        } else {
-            filter = listUserFavorite
-        }
+        favoriteCursor.close()
     }
 
     private fun showRV() {
@@ -98,16 +121,11 @@ class FavoriteActivity : AppCompatActivity() {
 
         favoriteRVAdapter.setOnItemClickCallback(object : FavoriteRVAdapter.OnItemClickCallback {
             override fun onItemClicked(data: UserDetailModel) {
-                databaseHandler.open()
-                databaseHandler.delete(
-                    DatabaseSchema.FavoriteTable.TABLE_NAME,
-                    DatabaseSchema.FavoriteTable.KEY_USERNAME,
-                    data.username
-                )
-                databaseHandler.close()
-                listUserFavorite.removeIf { userFavorite: UserDetailModel -> userFavorite.username == data.username }
+                val userFavoriteUri =
+                    Uri.parse(favoriteTable.CONTENT_URI.toString() + "/" + data.username)
+                contentResolver.delete(userFavoriteUri, null, null)
                 filter.removeIf { userFavorite: UserDetailModel -> userFavorite.username == data.username }
-                if (listUserFavorite.size == 0) {
+                if (filter.size == 0) {
                     binding.alert.container.visibility = View.VISIBLE
                 }
                 Toast.makeText(
