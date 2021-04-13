@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Consumer App</string>
+    <string name="todo">TODO</string>
+    <string name="search">Search....</string>
+    <string name="following">Following</string>
+    <string name="followers">Followers</string>
+    <string name="github">GitHub</string>
+    <string name="consumer">Consumer</string>
+    <string name="no_data">No Data</string>
+</resources>
