@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">ConsumerApp</string>
+    <string name="todo">TODO</string>
+    <string name="search">Search....</string>
+    <string name="following">Following</string>
+    <string name="followers">Followers</string>
+    <string name="github">GitHub</string>
+    <string name="users">Users</string>
+    <string name="open_github">Open GitHub</string>
+    <string name="consumer">Consumer</string>
+    <string name="no_data">No Data</string>
+    <string name="language_setting">Language Setting</string>
+    <string name="alarm_setting">Alarm Setting</string>
+</resources>

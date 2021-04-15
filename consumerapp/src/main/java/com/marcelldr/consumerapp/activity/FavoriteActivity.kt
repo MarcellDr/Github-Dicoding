@@ -1,10 +1,11 @@
-package com.marcelldr.githubdicoding.activity
+package com.marcelldr.consumerapp.activity
 
 import android.content.Intent
 import android.database.ContentObserver
 import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
 import android.os.HandlerThread
@@ -12,15 +13,15 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.marcelldr.githubdicoding.adapter.FavoriteRVAdapter
-import com.marcelldr.githubdicoding.custom.CustomLoading
-import com.marcelldr.githubdicoding.database.DatabaseSchema
-import com.marcelldr.githubdicoding.databinding.ActivityFavoriteBinding
-import com.marcelldr.githubdicoding.model.UserDetailModel
-import com.marcelldr.githubdicoding.service.GithubAPI
+import com.marcelldr.consumerapp.R
+import com.marcelldr.consumerapp.adapter.FavoriteRVAdapter
+import com.marcelldr.consumerapp.custom.CustomLoading
+import com.marcelldr.consumerapp.database.DatabaseSchema
+import com.marcelldr.consumerapp.databinding.ActivityFavoriteBinding
+import com.marcelldr.consumerapp.model.UserDetailModel
+import com.marcelldr.consumerapp.service.GithubAPI
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -81,7 +82,6 @@ class FavoriteActivity : AppCompatActivity() {
         if (filter.size == 0) {
             binding.alert.container.visibility = View.VISIBLE
         }
-        binding.navFavorite.backButton.setOnClickListener { finish() }
         binding.navFavorite.search.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}

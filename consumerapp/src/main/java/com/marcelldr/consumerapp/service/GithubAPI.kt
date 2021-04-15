@@ -1,21 +1,19 @@
-package com.marcelldr.githubdicoding.service
+package com.marcelldr.consumerapp.service
 
 import android.content.Context
 import android.util.Log
 import com.androidnetworking.AndroidNetworking
 import com.androidnetworking.common.Priority
-import com.marcelldr.githubdicoding.BuildConfig
-import com.marcelldr.githubdicoding.model.UserDetailModel
-import com.marcelldr.githubdicoding.model.UserSearchModel
+import com.marcelldr.consumerapp.model.UserDetailModel
+import com.marcelldr.consumerapp.model.UserSearchModel
 import org.json.JSONArray
 import org.json.JSONObject
 
 class GithubAPI(private val ctx: Context) {
-
     companion object {
         const val BASE_URL_USERS: String = "https://api.github.com/search/users?q={username}"
         const val BASE_URL_DETAIL: String = "https://api.github.com/users/{username}"
-        const val AUTH_KEY: String = BuildConfig.GITHUB_TOKEN
+        const val AUTH_KEY: String = "A"
     }
 
     fun getUsers(query: String? = "MarcellDr"): ArrayList<UserSearchModel> {
