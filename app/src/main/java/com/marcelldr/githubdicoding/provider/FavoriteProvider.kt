@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.UriMatcher
 import android.database.Cursor
 import android.net.Uri
-import android.util.Log
 import com.marcelldr.githubdicoding.database.DatabaseHandler
 import com.marcelldr.githubdicoding.database.DatabaseSchema
 
@@ -75,7 +74,7 @@ class FavoriteProvider : ContentProvider() {
         val updated: Int = when (FAVORITE_ID) {
             sUriMatcher.match(uri) -> databaseHandler.update(
                 favoriteTable.TABLE_NAME,
-                favoriteTable._ID,
+                favoriteTable.KEY_USERNAME,
                 uri.lastPathSegment.toString(),
                 values!!
             )

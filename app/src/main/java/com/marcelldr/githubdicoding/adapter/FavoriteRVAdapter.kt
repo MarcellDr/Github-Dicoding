@@ -12,6 +12,7 @@ import com.marcelldr.githubdicoding.model.UserDetailModel
 class FavoriteRVAdapter(private val listUserFavorite: ArrayList<UserDetailModel>) :
     RecyclerView.Adapter<FavoriteRVAdapter.ListViewHolder>() {
     private lateinit var onItemClickCallback: OnItemClickCallback
+    private lateinit var onFavoriteClickCallback: OnFavoriteClickCallback
 
     inner class ListViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val binding = FavoriteListItemBinding.bind(itemView)
@@ -32,8 +33,9 @@ class FavoriteRVAdapter(private val listUserFavorite: ArrayList<UserDetailModel>
 
     override fun onBindViewHolder(holder: ListViewHolder, position: Int) {
         holder.bind(listUserFavorite[position])
+        holder.itemView.setOnClickListener { onItemClickCallback.onItemClicked(listUserFavorite[holder.adapterPosition]) }
         holder.binding.favorite.setOnClickListener {
-            onItemClickCallback.onItemClicked(listUserFavorite[holder.adapterPosition])
+            onFavoriteClickCallback.onFavoriteClicked(listUserFavorite[holder.adapterPosition])
             unFavorite(position)
         }
     }
@@ -46,8 +48,16 @@ class FavoriteRVAdapter(private val listUserFavorite: ArrayList<UserDetailModel>
         fun onItemClicked(data: UserDetailModel)
     }
 
+    interface OnFavoriteClickCallback {
+        fun onFavoriteClicked(data: UserDetailModel)
+    }
+
     fun setOnItemClickCallback(onItemClickCallback: OnItemClickCallback) {
         this.onItemClickCallback = onItemClickCallback
+    }
+
+    fun setOnFavoriteClickCallback(onFavoriteClickCallback: OnFavoriteClickCallback) {
+        this.onFavoriteClickCallback = onFavoriteClickCallback
     }
 
     private fun unFavorite(position: Int) {

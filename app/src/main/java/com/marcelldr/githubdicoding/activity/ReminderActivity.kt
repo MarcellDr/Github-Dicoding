@@ -1,36 +1,54 @@
-package com.marcelldr.githubdicoding.custom
+package com.marcelldr.githubdicoding.activity
 
-import android.app.Dialog
 import android.app.TimePickerDialog
 import android.content.ContentValues
-import android.view.Window
+import android.content.Context
+import android.content.SharedPreferences
+import android.graphics.Color
+import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.marcelldr.githubdicoding.database.DatabaseHandler
 import com.marcelldr.githubdicoding.database.DatabaseSchema
-import com.marcelldr.githubdicoding.databinding.CustomAlarmDialogBinding
+import com.marcelldr.githubdicoding.databinding.ActivityReminderBinding
 import com.marcelldr.githubdicoding.service.AlarmReceiver
 import java.text.SimpleDateFormat
 import java.util.*
 
-class CustomAlarmDialog(private var activity: AppCompatActivity) : Dialog(activity),
-    TimePickerDialog.OnTimeSetListener {
-    private var binding: CustomAlarmDialogBinding = CustomAlarmDialogBinding.inflate(layoutInflater)
+class ReminderActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
     private var alarmReceiver: AlarmReceiver = AlarmReceiver()
-    private var databaseHandler: DatabaseHandler = DatabaseHandler.getInstance(context)
+    private lateinit var binding: ActivityReminderBinding
+    private lateinit var databaseHandler: DatabaseHandler
+    private lateinit var preferences: SharedPreferences
 
-    init {
-        this.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        this.setContentView(binding.root)
+    companion object {
+        private const val PREFS_NAME = "reminder_pref"
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityReminderBinding.inflate(layoutInflater)
+        databaseHandler = DatabaseHandler.getInstance(applicationContext)
+        preferences = applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        setContentView(binding.root)
+        noStatusBar()
         getUIReady()
+    }
+
+    private fun noStatusBar() {
+        window?.decorView?.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN or
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+        window?.statusBarColor = Color.TRANSPARENT
     }
 
     private fun getUIReady() {
         databaseHandler.open()
         val settingCursor = databaseHandler.where(
             DatabaseSchema.SettingTable.TABLE_NAME,
-            DatabaseSchema.SettingTable._ID,
+            DatabaseSchema.SettingTable.KEY_ID,
             "1"
         )
         settingCursor.apply {
@@ -42,22 +60,23 @@ class CustomAlarmDialog(private var activity: AppCompatActivity) : Dialog(activi
         }
         settingCursor.close()
         databaseHandler.close()
+        binding.switchAlarm.isChecked = preferences.getBoolean("isOn", false)
 
+        binding.backButton.setOnClickListener { finish() }
         binding.timeAlarm.setOnClickListener {
             val calendar = Calendar.getInstance()
             val hour = calendar.get(Calendar.HOUR_OF_DAY)
             val minute = calendar.get(Calendar.MINUTE)
             val formatHour24 = true
-            TimePickerDialog(activity, this, hour, minute, formatHour24).show()
+            TimePickerDialog(this@ReminderActivity, this, hour, minute, formatHour24).show()
         }
-        binding.setAlarm.setOnClickListener {
-            val time = binding.time.text.toString()
-
-            if (time != "") {
+        binding.switchAlarm.setOnCheckedChangeListener { _, isChecked ->
+            if (isChecked) {
+                val time = binding.time.text.toString()
                 databaseHandler.open()
                 val cursor = databaseHandler.where(
                     DatabaseSchema.SettingTable.TABLE_NAME,
-                    DatabaseSchema.SettingTable._ID,
+                    DatabaseSchema.SettingTable.KEY_ID,
                     "1"
                 )
                 cursor.apply {
@@ -66,13 +85,13 @@ class CustomAlarmDialog(private var activity: AppCompatActivity) : Dialog(activi
                         contentValues.put(DatabaseSchema.SettingTable.KEY_ALARM, time)
                         databaseHandler.update(
                             DatabaseSchema.SettingTable.TABLE_NAME,
-                            DatabaseSchema.SettingTable._ID,
+                            DatabaseSchema.SettingTable.KEY_ID,
                             "1",
                             contentValues
                         )
                     } else {
                         val contentValues = ContentValues()
-                        contentValues.put(DatabaseSchema.SettingTable._ID, "1")
+                        contentValues.put(DatabaseSchema.SettingTable.KEY_ID, "1")
                         contentValues.put(DatabaseSchema.SettingTable.KEY_ALARM, time)
                         databaseHandler.insert(
                             DatabaseSchema.SettingTable.TABLE_NAME,
@@ -83,27 +102,25 @@ class CustomAlarmDialog(private var activity: AppCompatActivity) : Dialog(activi
                 cursor.close()
                 databaseHandler.close()
                 alarmReceiver.setRepeatingAlarm(
-                    context,
+                    applicationContext,
                     time,
                     "Reminder",
                     "Reminder untuk $time"
                 )
-                Toast.makeText(context, "Alarm telah diset ke $time", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    applicationContext,
+                    "Alarm telah diset ke $time",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+                preferences.edit().putBoolean("isOn", true).apply()
+                Log.i("Reminder", preferences.getBoolean("isOn", false).toString())
+
             } else {
-                Toast.makeText(context, "Alarm belum diset", Toast.LENGTH_SHORT).show()
+                alarmReceiver.cancelAlarm(applicationContext)
+                Toast.makeText(applicationContext, "Alarm dihapus", Toast.LENGTH_SHORT).show()
+                preferences.edit().putBoolean("isOn", false).apply()
             }
-        }
-        binding.clearAlarm.setOnClickListener {
-            databaseHandler.open()
-            databaseHandler.delete(
-                DatabaseSchema.SettingTable.TABLE_NAME,
-                DatabaseSchema.SettingTable._ID,
-                "1"
-            )
-            databaseHandler.close()
-            alarmReceiver.cancelAlarm(context)
-            binding.time.text = ""
-            Toast.makeText(context, "Alarm dihapus", Toast.LENGTH_SHORT).show()
 
         }
     }
@@ -115,5 +132,6 @@ class CustomAlarmDialog(private var activity: AppCompatActivity) : Dialog(activi
         val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
 
         binding.time.text = timeFormat.format(calendar.time)
+        binding.switchAlarm.isChecked = false
     }
 }

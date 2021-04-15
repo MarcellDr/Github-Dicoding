@@ -1,3 +1,2 @@
-include ':consumerapp'
 include ':app'
 rootProject.name = "GitHub Dicoding"

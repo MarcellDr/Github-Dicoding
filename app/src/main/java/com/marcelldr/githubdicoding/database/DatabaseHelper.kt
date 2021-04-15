@@ -11,7 +11,7 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
 ) {
     companion object {
         const val DATABASE_NAME = "github_db"
-        const val DATABASE_VERSION = 2
+        const val DATABASE_VERSION = 1
     }
 
     override fun onCreate(db: SQLiteDatabase?) {
@@ -19,8 +19,8 @@ class DatabaseHelper(context: Context) : SQLiteOpenHelper(
         db?.execSQL(DatabaseSchema.SettingTable.CREATE_TABLE)
         db?.execSQL(
             "INSERT INTO ${DatabaseSchema.SettingTable.TABLE_NAME} " +
-                    "(${DatabaseSchema.SettingTable._ID}, ${DatabaseSchema.SettingTable.KEY_ALARM}) " +
-                    "VALUES (1, \"09:00\")"
+                    "(${DatabaseSchema.SettingTable.KEY_ALARM}) " +
+                    "VALUES (\"09:00\")"
         )
     }
 

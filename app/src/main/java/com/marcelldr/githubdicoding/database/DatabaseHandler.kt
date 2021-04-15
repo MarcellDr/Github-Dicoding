@@ -5,7 +5,6 @@ import android.content.Context
 import android.database.Cursor
 import android.database.SQLException
 import android.database.sqlite.SQLiteDatabase
-import android.provider.BaseColumns._ID
 
 class DatabaseHandler(context: Context) {
     private lateinit var database: SQLiteDatabase
@@ -37,18 +36,6 @@ class DatabaseHandler(context: Context) {
             null,
             null,
             null,
-            null,
-            null,
-            "$_ID ASC"
-        )
-    }
-
-    fun getById(table: String, id: String): Cursor {
-        return database.query(
-            table,
-            null,
-            "$_ID = ?",
-            arrayOf(id),
             null,
             null,
             null

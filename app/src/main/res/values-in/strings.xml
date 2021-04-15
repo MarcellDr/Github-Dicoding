@@ -12,6 +12,4 @@
     <string name="no_data">No Data</string>
     <string name="language_setting">Pengaturan Bahasa</string>
     <string name="alarm_setting">Pengaturan Alarm</string>
-    <string name="clear_alarm">Hapus Alarm</string>
-    <string name="set_alarm">Set Alarm</string>
 </resources>

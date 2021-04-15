@@ -1,6 +1,5 @@
 package com.marcelldr.githubdicoding.activity
 
-import android.app.TimePickerDialog
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
@@ -9,14 +8,12 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import android.widget.PopupMenu
-import android.widget.TimePicker
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.marcelldr.githubdicoding.R
 import com.marcelldr.githubdicoding.adapter.UserRVAdapter
-import com.marcelldr.githubdicoding.custom.CustomAlarmDialog
 import com.marcelldr.githubdicoding.custom.CustomLoading
 import com.marcelldr.githubdicoding.databinding.ActivityMainBinding
 import com.marcelldr.githubdicoding.model.UserSearchModel
@@ -28,7 +25,7 @@ import kotlinx.coroutines.withContext
 
 private const val LIST_USER = "list_user"
 
-class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
+class MainActivity : AppCompatActivity() {
     private var listUserSearch: ArrayList<UserSearchModel> = ArrayList()
     private lateinit var binding: ActivityMainBinding
     private lateinit var githubAPI: GithubAPI
@@ -104,8 +101,8 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
                     startActivity(intent)
                 }
                 R.id.alarm -> {
-                    val customAlarmDialog = CustomAlarmDialog(this@MainActivity)
-                    customAlarmDialog.show()
+                    val intent = Intent(this@MainActivity, ReminderActivity::class.java)
+                    startActivity(intent)
                 }
             }
             true
@@ -189,8 +186,5 @@ class MainActivity : AppCompatActivity(), TimePickerDialog.OnTimeSetListener {
                 }
             }
         })
-    }
-
-    override fun onTimeSet(view: TimePicker?, hourOfDay: Int, minute: Int) {
     }
 }

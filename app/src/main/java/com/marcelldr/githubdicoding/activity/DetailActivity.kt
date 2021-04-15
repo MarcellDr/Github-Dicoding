@@ -1,14 +1,10 @@
 package com.marcelldr.githubdicoding.activity
 
 import android.content.ContentValues
-import android.database.ContentObserver
 import android.database.Cursor
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
-import android.os.Handler
-import android.os.HandlerThread
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
